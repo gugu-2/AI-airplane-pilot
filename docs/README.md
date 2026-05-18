@@ -1,5 +1,7 @@
 # Aegis Autonomy: Autonomous Pilot OS
 
+## It is the untrained version Please train it for a minimum 12,000 flights in 3D virtual environment
+
 Aegis Autonomy is an aerospace-grade, multi-layered "Windows for autonomous aircraft." Built entirely on the ROS 2 (Robot Operating System) framework, it decouples raw flight stabilization from high-level cognitive AI. This architecture is hardware-agnostic and designed to power cargo aircraft, military drones, air taxis, and swarm platforms.
 
 ## System Documentation Suite
