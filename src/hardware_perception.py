@@ -1,12 +1,14 @@
 import cv2
 import time
+from perception import PerceptionModule
 
-class HardwarePerception:
+class HardwarePerception(PerceptionModule):
     def __init__(self, camera_index=0):
         """
-        Initializes connection to a physical camera.
+        Initializes connection to a physical camera and the neural network.
         For Jetson CSI cameras, the pipeline string would replace camera_index.
         """
+        super().__init__() # Load YOLO model
         print(f"[HardwarePerception] Initializing camera {camera_index}...")
         self.cap = cv2.VideoCapture(camera_index)
         

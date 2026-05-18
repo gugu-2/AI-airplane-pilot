@@ -11,6 +11,15 @@ else:
 import math
 import random
 
+def haversine_distance(lat1, lon1, lat2, lon2):
+    R = 6371000
+    phi1, phi2 = math.radians(lat1), math.radians(lat2)
+    delta_phi = math.radians(lat2 - lat1)
+    delta_lambda = math.radians(lon2 - lon1)
+    a = math.sin(delta_phi / 2.0) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(delta_lambda / 2.0) ** 2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    return R * c
+
 class NavigationModule:
     def __init__(self, drone: System):
         self.drone = drone
@@ -40,42 +49,42 @@ class NavigationModule:
         
         return waypoints
 
-    async def rrt_star_plan(self, start_lat, start_lon, dest_lat, dest_lon, alt):
+    async def rrt_star_plan(self, start_lat, start_lon, dest_lat, dest_lon, alt, mapper=None):
         """
         Simulates an RRT* (Rapidly-exploring Random Tree Star) path planning algorithm.
         Instead of a straight line, it generates a series of intermediate waypoints
-        to avoid mathematically defined obstacle zones.
+        to avoid mathematically defined obstacle zones. Uses SemanticMap memory.
         """
         print(f"[RRT*] Calculating optimal obstacle-free trajectory from ({start_lat:.6f}, {start_lon:.6f}) to ({dest_lat:.6f}, {dest_lon:.6f})")
         
-        # In a real RRT* implementation, this would:
-        # 1. Randomly sample the 3D space.
-        # 2. Check collision against an occupancy grid.
-        # 3. Connect nodes to find the shortest collision-free path.
-        
-        # Here we mock the result by generating a curved, multi-segment path to the destination
         waypoints = []
-        num_segments = 3
+        num_segments = 5
         
         lat_step = (dest_lat - start_lat) / num_segments
         lon_step = (dest_lon - start_lon) / num_segments
         
-        # Generate slightly randomized intermediate points (simulating going around obstacles)
         for i in range(1, num_segments):
-            jitter_lat = random.uniform(-0.00005, 0.00005)
-            jitter_lon = random.uniform(-0.00005, 0.00005)
+            inter_lat = start_lat + (lat_step * i)
+            inter_lon = start_lon + (lon_step * i)
+            inter_alt = alt
             
-            inter_lat = start_lat + (lat_step * i) + jitter_lat
-            inter_lon = start_lon + (lon_step * i) + jitter_lon
-            # We vary the altitude slightly for a true 3D trajectory
-            inter_alt = alt + random.uniform(-2, 5) 
+            if mapper:
+                x, y = mapper._gps_to_grid(inter_lat, inter_lon)
+                if x is not None and y is not None:
+                    # Very basic check if grid cell is an obstacle (-1)
+                    # For safety, we check a 3x3 window in a real app, here we check the cell itself
+                    if mapper.grid[y, x] == -1:
+                        print(f"[RRT*] Memory map collision detected at segment {i}! Rerouting...")
+                        inter_lat += random.uniform(0.00002, 0.00006)
+                        inter_lon += random.uniform(0.00002, 0.00006)
+                        inter_alt += 2.0
             
             waypoints.append((inter_lat, inter_lon, inter_alt))
             
         # Append final destination
         waypoints.append((dest_lat, dest_lon, alt))
         
-        print(f"[RRT*] Generated {len(waypoints)} intermediate waypoints for complex trajectory.")
+        print(f"[RRT*] Generated {len(waypoints)} intermediate waypoints for trajectory.")
         return waypoints
 
     async def fly_to_waypoint(self, lat: float, lon: float, alt: float):
@@ -86,8 +95,15 @@ class NavigationModule:
         # MAVSDK's goto_location takes (latitude_deg, longitude_deg, absolute_altitude_m, yaw_deg)
         await self.drone.action.goto_location(lat, lon, alt, float('nan'))
 
-        # A robust system would constantly check distance to target here.
-        # For this basic implementation, we will just sleep and assume it gets there.
-        # In the main loop, we will implement distance checking.
-        await asyncio.sleep(5) 
+        # Poll telemetry until we arrive within a 1.0m tolerance
+        async for position in self.drone.telemetry.position():
+            curr_lat = position.latitude_deg
+            curr_lon = position.longitude_deg
+            
+            dist = haversine_distance(curr_lat, curr_lon, lat, lon)
+            if dist < 1.0:
+                print(f"Reached waypoint! Distance: {dist:.2f}m")
+                break
+            
+            await asyncio.sleep(0.5)
         

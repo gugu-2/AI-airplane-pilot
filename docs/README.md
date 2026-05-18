@@ -9,4 +9,4 @@ For a detailed breakdown of the system, please refer to the following documentat
 - 🌟 **[Features](FEATURES.md)**: A complete list of the aerospace-grade capabilities, from Geofencing to TCAS.
 - ⚙️ **[Dependencies](DEPENDENCIES.md)**: Required OS, Flight Stacks (PX4/ROS 2), and Python libraries.
 - 🚀 **[How to Use](HOW_TO_USE.md)**: Instructions on how to launch the GCS Dashboard, run missions, and deploy to physical Jetson hardware.
-- 🛑 **[Engineering Problems Solved](problem.txt)**: A deep dive into how Aegis solves the 4 hardest problems in autonomous flight (GPS-denial, weather perception, etc).
+- 🛑 **[Engineering Problems Solved](problem.md)**: A deep dive into how Aegis solves the 4 hardest problems in autonomous flight (GPS-denial, weather perception, etc).

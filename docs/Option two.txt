@@ -502,27 +502,8 @@ Aircraft decisions must happen in milliseconds.
 
 ---
 
-## HARD PROBLEM #4
-
-Safety certification.
-
-Civil aviation authorities require extreme testing.
-
 ---
 
-# Budget Reality
-
-## Prototype Level
-
-$5k–$50k
-
-## Serious Startup
-
-$500k–$5M
-
-## Full Aircraft Autonomy
-
-$50M–billions
 
 ---
 

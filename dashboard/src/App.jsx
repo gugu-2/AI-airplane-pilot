@@ -16,6 +16,7 @@ function App() {
     { time: '02:59:01', msg: 'System initialized. Waiting for drone connection...', type: 'info' }
   ]);
   const [objects, setObjects] = useState([]);
+  const [mapObstacles, setMapObstacles] = useState([]);
 
   // Connect to WebSockets
   useEffect(() => {
@@ -34,6 +35,8 @@ function App() {
         setObjects(msg.data);
       } else if (msg.type === 'log') {
         addLog(msg.data.msg, msg.data.level);
+      } else if (msg.type === 'map_state') {
+        setMapObstacles(msg.data);
       }
     };
 
@@ -153,17 +156,34 @@ function App() {
             {!connected ? (
               <span className="mono" style={{ color: 'var(--text-muted)' }}>Awaiting Grid Data...</span>
             ) : (
-              <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-                {/* Mock grid visualization */}
+              <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+                {/* Center dot (home) */}
                 <div style={{
                   position: 'absolute', top: '50%', left: '50%', 
                   width: '8px', height: '8px', background: 'var(--accent-success)', 
-                  borderRadius: '50%', transform: 'translate(-50%, -50%)'
+                  borderRadius: '50%', transform: 'translate(-50%, -50%)', zIndex: 10
                 }}></div>
+                
+                {/* Current Drone Position */}
                 <div style={{
-                  position: 'absolute', top: '30%', left: '60%', 
-                  width: '10px', height: '10px', background: 'var(--accent-danger)'
+                  position: 'absolute',
+                  top: `${50 + (47.397742 - telemetry.lat) * 500000}%`,
+                  left: `${50 + (telemetry.lon - 8.545594) * 500000}%`,
+                  width: '8px', height: '8px', background: 'var(--accent-primary)',
+                  borderRadius: '50%', transform: 'translate(-50%, -50%)', zIndex: 11,
+                  boxShadow: '0 0 10px var(--accent-primary)'
                 }}></div>
+
+                {/* Map Obstacles */}
+                {mapObstacles.map((obs, i) => (
+                  <div key={i} style={{
+                    position: 'absolute',
+                    top: `${50 + (47.397742 - obs.lat) * 500000}%`,
+                    left: `${50 + (obs.lon - 8.545594) * 500000}%`,
+                    width: '8px', height: '8px', background: 'var(--accent-danger)',
+                    transform: 'translate(-50%, -50%)'
+                  }}></div>
+                ))}
               </div>
             )}
           </div>

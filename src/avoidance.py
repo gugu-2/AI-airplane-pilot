@@ -27,8 +27,9 @@ class ObstacleAvoidanceModule:
         """
         print("Calculating evasion trajectory...")
         # For simplicity, we just decide to fly slightly higher and to the right
-        alt_offset = 2.0  # Go up 2 meters
-        lat_offset = 0.00002 # Shift slightly (approx 2 meters)
-        lon_offset = 0.00002
+        # Added tiny random jitter so redundancy nodes don't vote on identical values
+        alt_offset = 2.0 + random.uniform(-0.1, 0.1)
+        lat_offset = 0.00002 + random.uniform(-0.000001, 0.000001)
+        lon_offset = 0.00002 + random.uniform(-0.000001, 0.000001)
         
         return (lat_offset, lon_offset, alt_offset)

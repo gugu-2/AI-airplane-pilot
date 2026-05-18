@@ -62,3 +62,22 @@ class SemanticMap:
         obstacles = np.sum(self.grid == -1)
         free_space = np.sum(self.grid == 1)
         print(f"   [Mapper] Map Status: {obstacles} obstacles, {free_space} explored cells.")
+
+    def get_obstacles(self):
+        """Returns a list of (lat, lon) for all known obstacles."""
+        if self.anchor_lat is None or self.anchor_lon is None:
+            return []
+            
+        obstacles = []
+        center_idx = self.grid_size // 2
+        for y in range(self.grid_size):
+            for x in range(self.grid_size):
+                if self.grid[y, x] == -1:
+                    # Convert grid x,y back to lat,lon
+                    x_meters = (x - center_idx) * self.resolution
+                    y_meters = (y - center_idx) * self.resolution
+                    
+                    lon = self.anchor_lon + (x_meters / (111111.0 * np.cos(np.radians(self.anchor_lat))))
+                    lat = self.anchor_lat + (y_meters / 111111.0)
+                    obstacles.append({"lat": lat, "lon": lon})
+        return obstacles

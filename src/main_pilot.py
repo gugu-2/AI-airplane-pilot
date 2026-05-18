@@ -124,7 +124,7 @@ async def run_mission(args):
         print(f"\n=== Navigating to Corner {corner_idx + 1} ===")
         
         # Calculate RRT* trajectory from current position to the corner
-        rrt_path = await nav_module.rrt_star_plan(current_lat, current_lon, dest_lat, dest_lon, dest_alt)
+        rrt_path = await nav_module.rrt_star_plan(current_lat, current_lon, dest_lat, dest_lon, dest_alt, mapper)
         
         for rrt_idx, (lat, lon, alt) in enumerate(rrt_path):
             print(f"\n-> Heading to RRT* sub-waypoint {rrt_idx + 1}/{len(rrt_path)}")
@@ -151,29 +151,28 @@ async def run_mission(args):
             # Perception Check
             if args.hardware:
                 img = perception_module.get_real_image()
-                # Assuming hardware module gets a detect method added later
             else:
                 img = perception_module.get_synthetic_image()
+                
+            if img is not None:
                 landing_pad = perception_module.detect_landing_pad(img)
                 if landing_pad:
                     print(f"   [Vision] Detected potential landing pad at {landing_pad}")
 
                 # YOLOv8 Advanced Vision with Tracking
-                # For synthetic image, it might not find real objects, but the code is active
-                if hasattr(perception_module, 'detect_and_track_objects'):
-                    objects = perception_module.detect_and_track_objects(img)
-                    if objects:
-                        for obj in objects:
-                            print(f"   [YOLO-Track] Found '{obj['class']}' (ID: {obj['id']}) at conf: {obj['confidence']:.2f}")
-                        
-                        # Broadcast detections
-                        await telemetry_server.broadcast({
-                            "type": "vision",
-                            "data": objects
-                        })
+                objects = perception_module.detect_and_track_objects(img)
+                if objects:
+                    for obj in objects:
+                        print(f"   [YOLO-Track] Found '{obj['class']}' (ID: {obj['id']}) at conf: {obj['confidence']:.2f}")
+                    
+                    # Broadcast detections
+                    await telemetry_server.broadcast({
+                        "type": "vision",
+                        "data": objects
+                    })
 
-                # Update memory map with free space
-                mapper.update_free_space(lat, lon)
+            # Update memory map with free space
+            mapper.update_free_space(lat, lon)
 
             # Avoidance Check
             if avoidance_module.check_for_obstacles():
@@ -185,6 +184,12 @@ async def run_mission(args):
                 
                 # Broadcast this finding to all other drones in the swarm!
                 swarm.broadcast_obstacle(obstacle_lat, obstacle_lon)
+                
+                # Broadcast the updated map to the dashboard
+                await telemetry_server.broadcast({
+                    "type": "map_state",
+                    "data": mapper.get_obstacles()
+                })
                 
                 # ---------------------------------------------------------
                 # TRIPLE-REDUNDANCY VOTING: EVASION CALCULATION
@@ -237,16 +242,19 @@ async def run_mission(args):
     print("\nMission waypoints complete. Returning to launch...")
     await drone.action.return_to_launch()
     
-    # Wait to land
-    await asyncio.sleep(15) 
+    # Wait to land safely using telemetry
+    print("Waiting for drone to land...")
+    async for in_air in drone.telemetry.in_air():
+        if not in_air:
+            print("-- Landed safely.")
+            break
+        await asyncio.sleep(1)
 
-    # We assume it landed for this mock script. A real script checks telemetry.in_air()
     print("Disarming...")
-    # Attempt to disarm (might fail if still in air, but this is a rough structure)
     try:
         await drone.action.disarm()
     except Exception as e:
-        print(f"Disarm failed (likely still landing): {e}")
+        print(f"Disarm failed: {e}")
 
     print("Main AI Brain shutting down.")
 
