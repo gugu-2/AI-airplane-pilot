@@ -14,10 +14,13 @@ class SemanticMap:
         # Grid values: 0 (unknown), 1 (free space), -1 (obstacle)
         self.grid = np.zeros((self.grid_size, self.grid_size), dtype=np.int8)
         
-        # We need to map GPS coordinates to grid cells.
-        # This requires an anchor (the takeoff point).
+        # GPS anchor (takeoff point = center of grid)
         self.anchor_lat = None
         self.anchor_lon = None
+        
+        # R4 FIX: Keep a simple list of obstacle GPS coords for fast O(1) lookup
+        # Previously mapper.obstacles did not exist, crashing the RL planner.
+        self.obstacles = []  # list of {'lat': float, 'lon': float}
         
         print(f"[Mapper] Initialized {grid_size}x{grid_size} semantic occupancy grid.")
 
@@ -54,8 +57,10 @@ class SemanticMap:
         """Marks a specific location as an obstacle in memory."""
         x, y = self._gps_to_grid(lat, lon)
         if x is not None and y is not None and 0 <= x < self.grid_size and 0 <= y < self.grid_size:
-            self.grid[y, x] = -1 # Mark as obstacle
-            print(f"   [Mapper] Memory Map Updated: Obstacle logged at grid [{x}, {y}]")
+            self.grid[y, x] = -1
+            # R4 FIX: Also append to the fast-access obstacles list
+            self.obstacles.append({'lat': lat, 'lon': lon})
+            print(f"   [Mapper] Obstacle logged at grid [{x}, {y}] | GPS ({lat:.6f}, {lon:.6f})")
 
     def print_map_status(self):
         """Prints basic statistics about the memory map."""
@@ -64,20 +69,9 @@ class SemanticMap:
         print(f"   [Mapper] Map Status: {obstacles} obstacles, {free_space} explored cells.")
 
     def get_obstacles(self):
-        """Returns a list of (lat, lon) for all known obstacles."""
-        if self.anchor_lat is None or self.anchor_lon is None:
-            return []
-            
-        obstacles = []
-        center_idx = self.grid_size // 2
-        for y in range(self.grid_size):
-            for x in range(self.grid_size):
-                if self.grid[y, x] == -1:
-                    # Convert grid x,y back to lat,lon
-                    x_meters = (x - center_idx) * self.resolution
-                    y_meters = (y - center_idx) * self.resolution
-                    
-                    lon = self.anchor_lon + (x_meters / (111111.0 * np.cos(np.radians(self.anchor_lat))))
-                    lat = self.anchor_lat + (y_meters / 111111.0)
-                    obstacles.append({"lat": lat, "lon": lon})
-        return obstacles
+        """
+        Returns a list of {'lat', 'lon'} for all known obstacles.
+        R12 FIX: Previously iterated the entire 40,000-cell grid on every call (O(n²)).
+        Now returns the pre-built list directly in O(1).
+        """
+        return self.obstacles

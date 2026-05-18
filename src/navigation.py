@@ -1,17 +1,15 @@
+# Navigation Module — Aegis Autonomous Flight OS
+# NOTE: This module does NOT import MAVSDK directly.
+# The 'drone' system object is injected by main_pilot.py (Dependency Injection pattern),
+# keeping this module fully testable without a live flight controller.
 import asyncio
-import os
-# We force MOCK mode on Windows by default because MAVSDK server binary is missing.
-USE_MOCK = True
-
-if USE_MOCK or os.name == 'nt':
-    print("\n--- Running in MOCK Simulation Mode ---")
-    from mock_mavsdk import MockSystem as System
-else:
-    from mavsdk import System
 import math
 import random
+import sys
+import os
 
 def haversine_distance(lat1, lon1, lat2, lon2):
+    """Calculates great-circle distance (meters) between two GPS coordinates."""
     R = 6371000
     phi1, phi2 = math.radians(lat1), math.radians(lat2)
     delta_phi = math.radians(lat2 - lat1)
@@ -20,9 +18,15 @@ def haversine_distance(lat1, lon1, lat2, lon2):
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     return R * c
 
+# Ensure cognitive module is in path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
+from cognitive.rl_models import RLInferenceEngine
+
 class NavigationModule:
-    def __init__(self, drone: System):
+    def __init__(self, drone: System, envelope=None):
         self.drone = drone
+        self.envelope = envelope
+        self.rl_engine = None
 
     async def generate_square_waypoints(self, side_length: float = 10.0):
         """
@@ -49,13 +53,13 @@ class NavigationModule:
         
         return waypoints
 
-    async def rrt_star_plan(self, start_lat, start_lon, dest_lat, dest_lon, alt, mapper=None):
+    async def linear_waypoint_plan(self, start_lat, start_lon, dest_lat, dest_lon, alt, mapper=None):
         """
-        Simulates an RRT* (Rapidly-exploring Random Tree Star) path planning algorithm.
-        Instead of a straight line, it generates a series of intermediate waypoints
-        to avoid mathematically defined obstacle zones. Uses SemanticMap memory.
+        Fix #6: Renamed from rrt_star_plan. This is honest linear interpolation, NOT a true RRT*.
+        A real RRT* would use random tree sampling and rewiring (see docs for Gazebo integration).
+        Generates intermediate waypoints between start and destination, with basic obstacle map checks.
         """
-        print(f"[RRT*] Calculating optimal obstacle-free trajectory from ({start_lat:.6f}, {start_lon:.6f}) to ({dest_lat:.6f}, {dest_lon:.6f})")
+        print(f"[Waypoint] Calculating linear trajectory from ({start_lat:.6f}, {start_lon:.6f}) to ({dest_lat:.6f}, {dest_lon:.6f})")
         
         waypoints = []
         num_segments = 5
@@ -84,8 +88,64 @@ class NavigationModule:
         # Append final destination
         waypoints.append((dest_lat, dest_lon, alt))
         
-        print(f"[RRT*] Generated {len(waypoints)} intermediate waypoints for trajectory.")
+        print(f"[Waypoint] Generated {len(waypoints)} intermediate waypoints for trajectory.")
         return waypoints
+
+    async def cognitive_rl_plan(self, start_lat, start_lon, dest_lat, dest_lon, alt, mapper=None):
+        """
+        Fix #26: Uses asyncio.wait_for() to prevent PyTorch inference from blocking the event loop.
+        Uses the PyTorch Deep Q-Network to dynamically generate a 3D path.
+        """
+        print(f"[RL-DQN] Neural Network taking over navigation to ({dest_lat:.6f}, {dest_lon:.6f})")
+        
+        if not self.rl_engine:
+            self.rl_engine = RLInferenceEngine()
+            
+        async def _run_plan():
+            loop = asyncio.get_event_loop()
+            waypoints = []
+            current_lat = start_lat
+            current_lon = start_lon
+            current_alt = alt
+            max_steps = 20
+            step_count = 0
+            
+            while step_count < max_steps:
+                dist = haversine_distance(current_lat, current_lon, dest_lat, dest_lon)
+                if dist < 5.0:
+                    break
+                    
+                obs_dist = 100.0
+                if mapper and len(mapper.obstacles) > 0:
+                    obs_dist = min([
+                        haversine_distance(current_lat, current_lon, obs['lat'], obs['lon'])
+                        for obs in mapper.obstacles
+                    ])
+                
+                # Run PyTorch inference in thread pool so it doesn't block the event loop (Fix #26)
+                action_result = await loop.run_in_executor(
+                    None,
+                    self.rl_engine.decide_next_action,
+                    current_lat, current_lon, dest_lat, dest_lon, obs_dist
+                )
+                action_name, d_lat, d_lon, d_alt = action_result
+                print(f"[RL-DQN] Step {step_count+1}: Model chose action '{action_name}'")
+                
+                current_lat += d_lat
+                current_lon += d_lon
+                current_alt += d_alt
+                waypoints.append((current_lat, current_lon, current_alt))
+                step_count += 1
+                
+            waypoints.append((dest_lat, dest_lon, alt))
+            return waypoints
+        
+        try:
+            # 2-second timeout prevents blocking the async loop during cold GPU start
+            return await asyncio.wait_for(_run_plan(), timeout=2.0)
+        except asyncio.TimeoutError:
+            print("[RL-DQN] WARNING: Inference timeout. Falling back to linear waypoint.")
+            return await self.linear_waypoint_plan(start_lat, start_lon, dest_lat, dest_lon, alt, mapper)
 
     async def fly_to_waypoint(self, lat: float, lon: float, alt: float):
         """
@@ -93,7 +153,10 @@ class NavigationModule:
         """
         print(f"Navigating to waypoint: Lat {lat:.6f}, Lon {lon:.6f}, Alt {alt:.1f}")
         # MAVSDK's goto_location takes (latitude_deg, longitude_deg, absolute_altitude_m, yaw_deg)
-        await self.drone.action.goto_location(lat, lon, alt, float('nan'))
+        if self.envelope:
+            await self.envelope.safe_goto_location(self.drone, lat, lon, alt, float('nan'))
+        else:
+            await self.drone.action.goto_location(lat, lon, alt, float('nan'))
 
         # Poll telemetry until we arrive within a 1.0m tolerance
         async for position in self.drone.telemetry.position():

@@ -39,10 +39,17 @@ class TripleRedundancySystem:
         d23 = self._haversine_distance(node2_cmd[0], node2_cmd[1], node3_cmd[0], node3_cmd[1])
         d13 = self._haversine_distance(node1_cmd[0], node1_cmd[1], node3_cmd[0], node3_cmd[1])
         
-        # Check agreement (nodes are within tolerance of each other)
-        agree_12 = d12 <= self.tolerance_meters
-        agree_23 = d23 <= self.tolerance_meters
-        agree_13 = d13 <= self.tolerance_meters
+        # R7 FIX: Also check altitude differences.
+        # A node proposing a very different altitude (e.g. -100m vs 200m) must be rejected
+        # even if its lat/lon matches. The altitude tolerance is 5x the horizontal tolerance.
+        alt_tol = self.tolerance_meters * 5.0
+        alt_ok_12 = abs(node1_cmd[2] - node2_cmd[2]) <= alt_tol
+        alt_ok_23 = abs(node2_cmd[2] - node3_cmd[2]) <= alt_tol
+        alt_ok_13 = abs(node1_cmd[2] - node3_cmd[2]) <= alt_tol
+        
+        agree_12 = (d12 <= self.tolerance_meters) and alt_ok_12
+        agree_23 = (d23 <= self.tolerance_meters) and alt_ok_23
+        agree_13 = (d13 <= self.tolerance_meters) and alt_ok_13
 
         if agree_12 and agree_23 and agree_13:
             # All 3 nodes agree perfectly. Average them for maximum precision.

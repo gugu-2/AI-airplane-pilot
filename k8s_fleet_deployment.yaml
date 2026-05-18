@@ -5,7 +5,7 @@ metadata:
   labels:
     app: aegis-fleet
 spec:
-  replicas: 3 # Running 3 cloud instances for triple redundancy
+  replicas: 3  # Triple redundancy
   selector:
     matchLabels:
       app: aegis-fleet
@@ -16,12 +16,24 @@ spec:
     spec:
       containers:
       - name: fleet-coordinator
-        image: aegis_autonomy/fleet_manager:latest
+        # B4 FIX: Updated image tag to match the Dockerfile we created (Fix #28)
+        image: aegis-os:latest
+        imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 8888 # WebSocket Ground Control API
+        - containerPort: 8765  # WebSocket Ground Control
         env:
         - name: ROS_DOMAIN_ID
-          value: "42" # Isolate ROS 2 swarm traffic
+          value: "42"          # Isolate swarm ROS2 traffic
+        - name: AEGIS_WS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aegis-secrets
+              key: ws-api-key   # kubectl create secret generic aegis-secrets --from-literal=ws-api-key=YOUR_KEY
+        - name: AEGIS_FLEET_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: aegis-secrets
+              key: fleet-hmac-key
         resources:
           requests:
             memory: "2Gi"
@@ -29,10 +41,28 @@ spec:
           limits:
             memory: "4Gi"
             cpu: "2000m"
+        # B4 FIX: Liveness probe — if WebSocket port stops responding, restart the pod
+        livenessProbe:
+          tcpSocket:
+            port: 8765
+          initialDelaySeconds: 30   # Give Python time to start up
+          periodSeconds: 15
+          failureThreshold: 3       # Restart after 3 consecutive failures (45s timeout)
+        # B4 FIX: Readiness probe — don't send traffic until server is ready to accept connections
+        readinessProbe:
+          tcpSocket:
+            port: 8765
+          initialDelaySeconds: 10
+          periodSeconds: 5
         volumeMounts:
+        - name: flight-data
+          mountPath: /aegis/logs
         - name: rtabmap-storage
           mountPath: /data/maps
       volumes:
+      - name: flight-data
+        persistentVolumeClaim:
+          claimName: flight-data-pvc
       - name: rtabmap-storage
         persistentVolumeClaim:
           claimName: shared-mapping-pvc
@@ -45,6 +75,18 @@ spec:
   type: LoadBalancer
   ports:
   - port: 80
-    targetPort: 8888
+    targetPort: 8765
   selector:
     app: aegis-fleet
+---
+# B4 FIX: PVC for SQLite flight database persistence across pod restarts
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: flight-data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

@@ -17,15 +17,27 @@ class PerceptionModule:
         
         # Load YOLOv8 model, preferring optimized TensorRT engine if available
         if YOLO_AVAILABLE:
-            engine_path = 'yolov8n.engine'
-            pt_path = 'yolov8n.pt'
+            # R10 FIX: Use absolute path so model is found regardless of launch directory
+            _models_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'models')
+            _root_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
+            engine_path = os.path.join(_models_dir, 'yolov8n.engine')
+            pt_path_models = os.path.join(_models_dir, 'yolov8n.pt')
+            # A5 FIX: Also check project root — that's where the file currently lives
+            pt_path_root = os.path.join(_root_dir, 'yolov8n.pt')
             
             if os.path.exists(engine_path):
-                print(f"[Perception] Loading optimized TensorRT engine: {engine_path}")
+                print(f"[Perception] Loading TensorRT engine: {engine_path}")
                 self.model = YOLO(engine_path)
+            elif os.path.exists(pt_path_models):
+                print(f"[Perception] Loading PyTorch model from models/: {pt_path_models}")
+                self.model = YOLO(pt_path_models)
+            elif os.path.exists(pt_path_root):
+                print(f"[Perception] Loading PyTorch model from project root: {pt_path_root}")
+                self.model = YOLO(pt_path_root)
             else:
-                print(f"[Perception] TensorRT engine not found. Falling back to PyTorch model: {pt_path}")
-                self.model = YOLO(pt_path)
+                print(f"[Perception] No YOLO model found in models/ or project root. Object detection disabled.")
+                print(f"[Perception] Download with: python -c \"from ultralytics import YOLO; YOLO('yolov8n.pt')\"")
+                self.model = None
         else:
             self.model = None
 
@@ -66,15 +78,18 @@ class PerceptionModule:
         contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         
         if contours:
-            # Find the largest contour which should be the landing pad
             largest_contour = max(contours, key=cv2.contourArea)
             
-            # Calculate the center of the contour
+            # R15 FIX: Reject tiny contours (noise, lens flares, small reflections)
+            # A real 1m landing pad at 50m altitude subtends ~200px² at 60deg FOV
+            if cv2.contourArea(largest_contour) < 500:
+                return None
+            
             M = cv2.moments(largest_contour)
             if M["m00"] != 0:
                 cX = int(M["m10"] / M["m00"])
                 cY = int(M["m01"] / M["m00"])
-                return (cX, cY) # Return center coordinates of the landing pad
+                return (cX, cY)
 
         return None # Landing pad not found
 

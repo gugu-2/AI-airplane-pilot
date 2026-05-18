@@ -32,6 +32,7 @@ setup(
             'envelope_protection_node = aegis_autonomy.envelope_protection_node:main',
             'visual_navigation_node = aegis_autonomy.visual_navigation_node:main',
             'emergency_ai_node = aegis_autonomy.emergency_ai_node:main',
+            'depth_perception_node = aegis_autonomy.depth_perception_node:main',
         ],
     },
 )
