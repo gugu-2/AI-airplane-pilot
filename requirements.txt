@@ -1,0 +1,15 @@
+# Flight control SDK
+mavsdk==2.8.1
+
+# Math and arrays
+numpy>=1.24.0
+
+# Computer vision for perception layer
+opencv-python>=4.8.0
+
+# Machine learning
+torch>=2.1.0
+torchvision>=0.16.0
+
+# ROS 2 Python client (optional for strict SITL, needed later)
+# rclpy is typically installed system-wide with ROS2, so we don't pin it here unless using specific wheels.

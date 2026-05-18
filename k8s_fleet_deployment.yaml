@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aegis-autonomy-fleet-manager
+  labels:
+    app: aegis-fleet
+spec:
+  replicas: 3 # Running 3 cloud instances for triple redundancy
+  selector:
+    matchLabels:
+      app: aegis-fleet
+  template:
+    metadata:
+      labels:
+        app: aegis-fleet
+    spec:
+      containers:
+      - name: fleet-coordinator
+        image: aegis_autonomy/fleet_manager:latest
+        ports:
+        - containerPort: 8888 # WebSocket Ground Control API
+        env:
+        - name: ROS_DOMAIN_ID
+          value: "42" # Isolate ROS 2 swarm traffic
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1000m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+        volumeMounts:
+        - name: rtabmap-storage
+          mountPath: /data/maps
+      volumes:
+      - name: rtabmap-storage
+        persistentVolumeClaim:
+          claimName: shared-mapping-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aegis-ground-control-api
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8888
+  selector:
+    app: aegis-fleet
