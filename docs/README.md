@@ -24,4 +24,3 @@ To fully operate, integrate, and extend the Aegis Flight Operating System, refer
 
 ### Email me on majipritam47@gmail.com For any enquiry
 
-
