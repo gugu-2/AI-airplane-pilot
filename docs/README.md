@@ -23,4 +23,3 @@ To fully operate, integrate, and extend the Aegis Flight Operating System, refer
 * ⚙️ **[System Dependencies](DEPENDENCIES.md)**: Core operating systems, ROS2 libraries, and python packages.
 
 ### Email me on majipritam47@gmail.com For any enquiry
-
