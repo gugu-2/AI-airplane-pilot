@@ -1,0 +1,18 @@
+[
+  "tests/test_avoidance.py::test_obstacle_avoidance_module_integration",
+  "tests/test_avoidance.py::test_realsense_collision_detection_negative_depth",
+  "tests/test_avoidance.py::test_realsense_collision_detection_negative_lateral",
+  "tests/test_avoidance.py::test_realsense_collision_detection_positive",
+  "tests/test_avoidance.py::test_realsense_driver_simulation_mode",
+  "tests/test_envelope_protection.py::test_altitude_above_ceiling_is_clamped",
+  "tests/test_envelope_protection.py::test_altitude_below_floor_is_clamped",
+  "tests/test_envelope_protection.py::test_altitude_floor_disabled_in_landing_mode",
+  "tests/test_envelope_protection.py::test_geofence_is_relative_to_home",
+  "tests/test_envelope_protection.py::test_lat_exceeding_geofence_is_clamped",
+  "tests/test_envelope_protection.py::test_valid_command_passes_through_unchanged",
+  "tests/test_state_estimation.py::test_ekf_initializes_at_correct_position",
+  "tests/test_state_estimation.py::test_ekf_predict_updates_position",
+  "tests/test_state_estimation.py::test_ekf_update_converges_toward_gps",
+  "tests/test_state_estimation.py::test_inject_position_delta_cpp_backend",
+  "tests/test_state_estimation.py::test_inject_position_delta_numpy"
+]
