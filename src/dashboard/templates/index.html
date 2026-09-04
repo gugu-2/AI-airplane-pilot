@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aegis GCS | Linear.app Edition</title>
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CesiumJS for True 3D Globe -->
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.112/Build/Cesium/Cesium.js"></script>
+    <link href="https://cesium.com/downloads/cesiumjs/releases/1.112/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        bgDark: '#0E1015',
+                        panelDark: '#16181D',
+                        borderSubtle: 'rgba(255,255,255,0.08)',
+                        textMuted: '#8A8F98',
+                        textBright: '#EAECEE',
+                        accentBlue: '#5E6AD2',
+                        accentSky: '#38bdf8'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        body { background-color: #0E1015; color: #EAECEE; font-family: 'Inter', sans-serif; overflow: hidden; }
+        
+        /* Glassmorphism & Linear Style */
+        .glass-panel {
+            background: rgba(22, 24, 29, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+        }
+
+        .tab-content { display: none; height: 100%; width: 100%; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: flex; flex-direction: column; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Sidebar Nav Item */
+        .nav-item { transition: all 0.2s ease; cursor: pointer; color: #8A8F98; }
+        .nav-item:hover { color: #EAECEE; background: rgba(255,255,255,0.03); border-radius: 8px; }
+        .nav-item.active { color: #EAECEE; background: rgba(255,255,255,0.06); border-radius: 8px; font-weight: 500; }
+        .nav-item.active svg { color: #5E6AD2; }
+
+        /* Map styling */
+        #map { height: 100%; width: 100%; border-radius: 12px; overflow: hidden; }
+        
+        /* Override Cesium Default Styling to blend with dark theme */
+        .cesium-viewer-bottom { display: none !important; }
+        .cesium-widget-credits { display: none !important; }
+        .cesium-baseLayerPicker-dropDown { background-color: #16181D !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 8px !important; }
+        .cesium-baseLayerPicker-item { color: #EAECEE !important; }
+        .cesium-baseLayerPicker-itemLabel { color: #8A8F98 !important; }
+        .cesium-baseLayerPicker-item:hover { background-color: rgba(255,255,255,0.05) !important; }
+        .cesium-button { background-color: rgba(22, 24, 29, 0.8) !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 6px !important; backdrop-filter: blur(8px) !important; box-shadow: none !important; }
+        .cesium-button:hover { background-color: rgba(255,255,255,0.1) !important; }
+
+        /* Status Badge */
+        .status-dot { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+        
+        .status-dot.disconnected { animation: pulseRed 2s infinite; background-color: #ef4444; }
+        @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+
+        .telemetry-val { font-variant-numeric: tabular-nums; }
+        
+        .mockup-grid { background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 24px 24px; }
+    </style>
+</head>
+<body class="h-screen flex text-sm">
+
+    <!-- SIDEBAR -->
+    <aside class="w-64 border-r border-borderSubtle bg-panelDark flex flex-col flex-shrink-0 relative z-20">
+        <!-- Logo / Header -->
+        <div class="h-16 flex items-center px-6 border-b border-borderSubtle">
+            <div class="flex items-center gap-3">
+                <div class="w-6 h-6 rounded-md bg-gradient-to-tr from-accentBlue to-indigo-400 flex items-center justify-center shadow-lg shadow-accentBlue/20">
+                    <i data-feather="hexagon" class="w-4 h-4 text-white"></i>
+                </div>
+                <h1 class="font-semibold text-textBright tracking-wide">AEGIS<span class="text-textMuted">OS</span></h1>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+            <div class="text-xs font-semibold text-textMuted tracking-wider px-3 mb-2 mt-4 uppercase">Operations</div>
+            
+            <div class="nav-item active flex items-center gap-3 px-3 py-2" onclick="switchMapMode('3D', this)">
+                <i data-feather="globe" class="w-4 h-4"></i>
+                <span>3D Flight Map</span>
+            </div>
+            
+            <div class="nav-item flex items-center gap-3 px-3 py-2" onclick="switchMapMode('2D', this)">
+                <i data-feather="map" class="w-4 h-4"></i>
+                <span>2D Flight Map</span>
+            </div>
+            
+            <div class="nav-item flex items-center gap-3 px-3 py-2" onclick="switchTab('tab-perception', this)">
+                <i data-feather="eye" class="w-4 h-4"></i>
+                <span>3D Perception</span>
+            </div>
+
+            <div class="text-xs font-semibold text-textMuted tracking-wider px-3 mb-2 mt-6 uppercase">Network</div>
+            
+            <div class="nav-item flex items-center gap-3 px-3 py-2" onclick="switchTab('tab-swarm', this)">
+                <i data-feather="cpu" class="w-4 h-4"></i>
+                <span>Swarm Topology</span>
+            </div>
+
+            <div class="text-xs font-semibold text-textMuted tracking-wider px-3 mb-2 mt-6 uppercase">Intelligence</div>
+            
+            <div class="nav-item flex items-center gap-3 px-3 py-2" onclick="switchTab('tab-ai', this)">
+                <i data-feather="activity" class="w-4 h-4"></i>
+                <span>AI Core (RL)</span>
+            </div>
+        </nav>
+
+        <!-- System Status Footer -->
+        <div class="p-4 border-t border-borderSubtle bg-black/20">
+            <div class="flex items-center gap-2 mb-2">
+                <div id="conn-indicator" class="w-2 h-2 rounded-full bg-red-500 status-dot disconnected"></div>
+                <span id="status-display" class="text-xs font-medium text-textMuted">CONNECTING...</span>
+            </div>
+            <div class="text-[10px] text-textMuted/60 uppercase tracking-widest">
+                UPTIME: <span id="uptime-display" class="text-textBright font-mono">00:00:00</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 relative bg-bgDark overflow-hidden flex flex-col">
+        
+        <!-- HEADER -->
+        <header class="h-16 flex items-center px-8 border-b border-borderSubtle bg-panelDark/50 backdrop-blur-md z-10 shrink-0">
+            <h2 id="header-title" class="text-lg font-medium">3D Flight Map</h2>
+            <div class="ml-auto flex items-center gap-4 text-textMuted">
+                <button class="hover:text-textBright transition-colors"><i data-feather="settings" class="w-4 h-4"></i></button>
+                <button class="hover:text-textBright transition-colors"><i data-feather="bell" class="w-4 h-4"></i></button>
+                <div class="w-px h-4 bg-borderSubtle"></div>
+                <span class="text-xs font-mono bg-white/5 px-2 py-1 rounded border border-white/5">v2.1.0</span>
+            </div>
+        </header>
+
+        <!-- CONTENT AREA -->
+        <div class="flex-1 p-6 overflow-hidden relative">
+
+            <!-- TAB: FLIGHT MAP (ACTIVE) -->
+            <div id="tab-map" class="tab-content active relative h-full">
+                <!-- Cesium 3D Map Container -->
+                <div class="absolute inset-0 rounded-xl overflow-hidden border border-borderSubtle shadow-2xl bg-black">
+                    <div id="map" class="w-full h-full"></div>
+                </div>
+
+                <!-- Left UI Overlay Container -->
+                <div class="absolute top-6 bottom-6 left-6 w-80 flex flex-col gap-6 z-[500] pointer-events-none overflow-y-auto" style="scrollbar-width: none;">
+                    
+                    <!-- Floating Telemetry HUD -->
+                    <div class="w-full glass-panel p-5 flex flex-col gap-5 pointer-events-auto shrink-0">
+                        <div class="flex items-center gap-2 text-xs font-semibold tracking-wider text-textMuted uppercase mb-1">
+                            <i data-feather="compass" class="w-3 h-3"></i> Telemetry
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-y-4 gap-x-2">
+                            <div>
+                                <div class="text-[10px] text-textMuted uppercase tracking-wider mb-1">Altitude</div>
+                                <div class="text-2xl font-light text-white telemetry-val"><span id="alt-val">0.0</span> <span class="text-sm text-textMuted">m</span></div>
+                            </div>
+                            <div>
+                                <div class="text-[10px] text-textMuted uppercase tracking-wider mb-1">Heading</div>
+                                <div class="text-2xl font-light text-white telemetry-val"><span id="hdg-val">000</span><span class="text-sm text-textMuted">°</span></div>
+                            </div>
+                            <div>
+                                <div class="text-[10px] text-textMuted uppercase tracking-wider mb-1">Battery</div>
+                                <div class="text-lg font-light text-emerald-400 telemetry-val"><span id="bat-val">100.0</span><span class="text-xs">%</span></div>
+                            </div>
+                            <div>
+                                <div class="text-[10px] text-textMuted uppercase tracking-wider mb-1">Mode</div>
+                                <div class="text-sm font-medium text-accentSky mt-1"><span id="mode-val">STANDBY</span></div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-borderSubtle">
+                            <div class="flex justify-between text-xs font-mono text-textMuted mb-2">
+                                <span>LAT</span> <span id="lat-val" class="text-textBright">--.------</span>
+                            </div>
+                            <div class="flex justify-between text-xs font-mono text-textMuted">
+                                <span>LNG</span> <span id="lng-val" class="text-textBright">--.------</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Floating Mission Control Panel -->
+                    <div class="w-full glass-panel p-5 flex flex-col gap-4 pointer-events-auto shrink-0 mt-auto">
+                        <div class="flex justify-between items-center text-xs font-semibold tracking-wider text-textMuted uppercase mb-1 border-b border-borderSubtle pb-2">
+                            <span class="flex items-center gap-2"><i data-feather="sliders" class="w-3 h-3"></i> Mission Control</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-[10px] text-textMuted uppercase">Target LAT</label>
+                                <input type="number" id="cmd-lat" class="w-full bg-black/40 border border-borderSubtle rounded px-2 py-1 mt-1 text-sm text-textBright outline-none focus:border-accentBlue" placeholder="37.7749" step="0.000001">
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-textMuted uppercase">Target LNG</label>
+                                <input type="number" id="cmd-lon" class="w-full bg-black/40 border border-borderSubtle rounded px-2 py-1 mt-1 text-sm text-textBright outline-none focus:border-accentBlue" placeholder="-122.419" step="0.000001">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="text-[10px] text-textMuted uppercase">Target ALT (m)</label>
+                            <input type="number" id="cmd-alt" class="w-full bg-black/40 border border-borderSubtle rounded px-2 py-1 mt-1 text-sm text-textBright outline-none focus:border-accentBlue" placeholder="50.0">
+                        </div>
+
+                        <button onclick="sendTargetCmd()" class="w-full bg-accentBlue hover:bg-indigo-500 text-white font-medium py-2 rounded transition-colors text-sm shadow-[0_0_15px_rgba(94,106,210,0.4)] mt-2">
+                            FLY TO TARGET
+                        </button>
+                        
+                        <div class="grid grid-cols-2 gap-3 mt-2 pt-4 border-t border-borderSubtle">
+                            <button onclick="sendCmd('HOLD_POSITION')" class="bg-panelDark hover:bg-white/10 border border-borderSubtle text-textBright font-medium py-2 rounded transition-colors text-sm">
+                                HOLD POS
+                            </button>
+                            <button onclick="sendCmd('RTL')" class="bg-red-500/20 hover:bg-red-500/40 border border-red-500/50 text-red-400 font-medium py-2 rounded transition-colors text-sm">
+                                EMERGENCY RTL
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: 3D PERCEPTION -->
+            <div id="tab-perception" class="tab-content h-full">
+                <div class="w-full h-full glass-panel flex flex-col overflow-hidden mockup-grid relative">
+                    <div class="p-4 border-b border-borderSubtle flex justify-between items-center bg-black/40">
+                        <div class="flex gap-2">
+                            <span id="lidar-status" class="px-2 py-1 rounded text-xs bg-accentBlue/20 text-accentBlue border border-accentBlue/30">LiDAR Active</span>
+                            <span class="px-2 py-1 rounded text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Depth 32x32</span>
+                        </div>
+                        <div class="text-xs font-mono text-textMuted" id="vision-fps">FPS: --</div>
+                    </div>
+                    
+                    <div class="flex-1 flex items-center justify-center relative">
+                        <div id="perception-spinner" class="absolute w-64 h-64 border border-accentSky/30 rounded-full animate-[spin_10s_linear_infinite] transition-all duration-300" style="transform: perspective(500px) rotateX(60deg);"></div>
+                        <div class="absolute w-48 h-48 border border-accentBlue/40 rounded-full animate-[spin_7s_linear_infinite_reverse]" style="transform: perspective(500px) rotateX(60deg);"></div>
+                        
+                        <div class="text-center z-10 p-6 glass-panel flex flex-col w-96">
+                            <i data-feather="cpu" class="w-8 h-8 text-textMuted mx-auto mb-3"></i>
+                            <h3 class="text-lg text-white mb-1">Point Cloud & YOLOv8 Stream</h3>
+                            <p class="text-sm text-textMuted mb-4">Live 3D depth mapping and visual object detection engaged via backend.</p>
+                            
+                            <!-- Live Detections Feed -->
+                            <div class="text-left bg-black/40 p-3 rounded h-40 overflow-y-auto text-[11px] font-mono space-y-2 border border-borderSubtle" id="vision-log">
+                                <div class="text-textMuted">Waiting for vision data...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: SWARM NETWORK -->
+            <div id="tab-swarm" class="tab-content h-full">
+                <div class="grid grid-cols-3 gap-6 h-full">
+                    <div class="col-span-2 glass-panel p-6 flex flex-col relative overflow-hidden mockup-grid">
+                        <h3 class="text-sm font-semibold text-textMuted uppercase tracking-wider mb-6">Topology Map</h3>
+                        <div class="flex-1 relative flex items-center justify-center" id="swarm-graph-container">
+                            <!-- Center Node (This Drone) -->
+                            <div class="w-12 h-12 rounded-full bg-accentBlue/20 border border-accentBlue flex items-center justify-center text-accentBlue absolute z-20 shadow-[0_0_20px_rgba(94,106,210,0.5)]" style="top: 50%; left: 50%; transform: translate(-50%, -50%);">A1</div>
+                            <!-- Dynamic SVG Lines -->
+                            <svg id="swarm-lines" class="absolute inset-0 w-full h-full pointer-events-none stroke-accentBlue/30 z-0"></svg>
+                            <!-- Dynamic Peer Nodes -->
+                            <div id="swarm-nodes" class="absolute inset-0 w-full h-full pointer-events-none z-10"></div>
+                        </div>
+                    </div>
+                    <div class="col-span-1 flex flex-col gap-6">
+                        <div class="glass-panel p-5">
+                            <h3 class="text-xs font-semibold text-textMuted uppercase tracking-wider mb-4 flex justify-between">
+                                Node Roster 
+                                <span class="text-emerald-400 font-mono text-[10px]" id="swarm-count">1 Nodes</span>
+                            </h3>
+                            <div class="space-y-3" id="swarm-roster">
+                                <div class="flex justify-between items-center text-sm pb-2 border-b border-borderSubtle">
+                                    <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></div>Aegis-Alpha</div>
+                                    <span class="font-mono text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded">Local</span>
+                                </div>
+                                <!-- Dynamic roster items will go here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: AI CORE (RL) -->
+            <div id="tab-ai" class="tab-content h-full">
+                <div class="glass-panel p-5 h-full flex flex-col justify-center items-center text-center relative overflow-hidden mockup-grid">
+                    <i id="ai-icon" data-feather="activity" class="w-16 h-16 text-emerald-400 mb-4 transition-colors duration-200"></i>
+                    <h3 class="text-xl text-white mb-2">Continuous Action Network</h3>
+                    <p class="text-textMuted max-w-md mb-8">The PyTorch Deep Q-Network is actively running inference, converting spatial data into continuous navigational maneuvers.</p>
+                    
+                    <div class="w-full max-w-md bg-black/40 rounded-xl p-6 text-left border border-borderSubtle shadow-xl backdrop-blur-md relative z-10">
+                        <div class="flex justify-between items-center mb-6 border-b border-borderSubtle pb-4">
+                            <span class="text-sm font-medium text-textBright">Latest Decision</span>
+                            <span id="ai-action" class="text-xs font-mono bg-accentBlue/20 text-accentBlue px-2 py-1 rounded border border-accentBlue/30 shadow-[0_0_10px_rgba(94,106,210,0.3)]">AWAITING_STATE</span>
+                        </div>
+                        
+                        <div class="space-y-5">
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-[10px] uppercase text-textMuted tracking-wider font-semibold">Inference Confidence</span>
+                                    <span id="ai-conf-text" class="text-xs font-mono text-emerald-400">0.0%</span>
+                                </div>
+                                <div class="w-full bg-panelDark h-1.5 rounded-full overflow-hidden border border-borderSubtle">
+                                    <div id="ai-conf-bar" class="bg-gradient-to-r from-emerald-500 to-accentSky h-full w-0 transition-all duration-300"></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-[10px] uppercase text-textMuted tracking-wider font-semibold">Lateral Delta (Lat)</span>
+                                    <span id="ai-dlat-text" class="text-xs font-mono text-textMuted">0.000</span>
+                                </div>
+                                <div class="w-full bg-panelDark h-1.5 rounded-full overflow-hidden border border-borderSubtle">
+                                    <!-- Using margin-left to simulate positive/negative center bar -->
+                                    <div id="ai-dlat-bar" class="bg-indigo-400 h-full w-[50%] ml-[50%] transition-all duration-300"></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-[10px] uppercase text-textMuted tracking-wider font-semibold">Lateral Delta (Lon)</span>
+                                    <span id="ai-dlon-text" class="text-xs font-mono text-textMuted">0.000</span>
+                                </div>
+                                <div class="w-full bg-panelDark h-1.5 rounded-full overflow-hidden border border-borderSubtle">
+                                    <div id="ai-dlon-bar" class="bg-indigo-400 h-full w-[50%] ml-[50%] transition-all duration-300"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Initialize Feather Icons
+        feather.replace();
+
+        function switchTab(tabId, navElement) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            navElement.classList.add('active');
+            document.getElementById('header-title').innerText = navElement.innerText.trim();
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function switchMapMode(mode, navElement) {
+            switchTab('tab-map', navElement);
+            if (window.viewer) {
+                if (mode === '3D') viewer.scene.mode = Cesium.SceneMode.SCENE3D;
+                else if (mode === '2D') viewer.scene.mode = Cesium.SceneMode.SCENE2D;
+            }
+        }
+
+        // --- CESIUM 3D GLOBE INITIALIZATION ---
+        const viewer = new Cesium.Viewer('map', {
+            terrainProvider: Cesium.createWorldTerrainAsync ? Cesium.createWorldTerrainAsync() : undefined,
+            animation: false,
+            timeline: false,
+            geocoder: false,
+            homeButton: false,
+            infoBox: false,
+            selectionIndicator: false,
+            navigationHelpButton: false,
+            baseLayerPicker: true, 
+            sceneModePicker: false,
+            skyBox: false, 
+            skyAtmosphere: false
+        });
+
+        viewer.scene.backgroundColor = Cesium.Color.fromCssColorString('#0E1015');
+        viewer.scene.screenSpaceCameraController.maximumZoomDistance = 50000; 
+
+        try {
+            if (Cesium.createOsmBuildingsAsync) {
+                Cesium.createOsmBuildingsAsync().then(buildings => { viewer.scene.primitives.add(buildings); });
+            }
+        } catch(e) {}
+
+        const positionProperty = new Cesium.SampledPositionProperty();
+        const droneEntity = viewer.entities.add({
+            name: "Aegis Drone",
+            position: positionProperty,
+            point: { pixelSize: 12, color: Cesium.Color.fromCssColorString('#38bdf8'), outlineColor: Cesium.Color.WHITE, outlineWidth: 2 },
+            path: { resolution: 1, material: new Cesium.PolylineGlowMaterialProperty({ glowPower: 0.1, color: Cesium.Color.fromCssColorString('#38bdf8') }), width: 3 }
+        });
+
+        window.viewer = viewer;
+
+        // --- DATA STORES & STATE ---
+        const swarmNodes = {}; // Track active swarm peers
+        
+        // Helper to format timestamps
+        function getTimeString() {
+            const now = new Date();
+            return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}.${String(now.getMilliseconds()).padStart(3, '0').substring(0,2)}`;
+        }
+
+        let visionFrameCount = 0;
+        setInterval(() => {
+            document.getElementById('vision-fps').innerText = `FPS: ${(visionFrameCount).toFixed(1)}`;
+            visionFrameCount = 0;
+        }, 1000);
+
+        // --- WEBSOCKET CONNECTION & DATA ROUTING ---
+        let ws;
+        function connectWebSocket() {
+            ws = new WebSocket('ws://127.0.0.1:8765');
+            const ind = document.getElementById('conn-indicator');
+            const stat = document.getElementById('status-display');
+            
+            ws.onopen = () => {
+                ws.send(JSON.stringify({ type: 'AUTH', key: 'aegis-local-dev-key' }));
+                ind.classList.remove('disconnected', 'bg-red-500');
+                ind.classList.add('bg-emerald-500');
+                stat.innerText = 'ONLINE \u2022 DATALINK SECURE';
+                stat.classList.replace('text-textMuted', 'text-emerald-400');
+            };
+
+            ws.onclose = () => {
+                ind.classList.remove('bg-emerald-500');
+                ind.classList.add('disconnected', 'bg-red-500');
+                stat.innerText = 'CONNECTING...';
+                stat.classList.replace('text-emerald-400', 'text-textMuted');
+                setTimeout(connectWebSocket, 2000);
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const payload = JSON.parse(event.data);
+                    const type = payload.type;
+                    const data = payload.data;
+
+                    // 1. Core Telemetry Feed (Map Tab)
+                    if (type === 'telemetry') {
+                        document.getElementById('alt-val').innerText = data.alt.toFixed(1);
+                        document.getElementById('hdg-val').innerText = (data.heading || 0).toFixed(0);
+                        document.getElementById('bat-val').innerText = data.battery.toFixed(1);
+                        document.getElementById('mode-val').innerText = data.mode.toUpperCase();
+                        document.getElementById('lat-val').innerText = data.lat.toFixed(6);
+                        document.getElementById('lng-val').innerText = data.lon.toFixed(6);
+
+                        const time = Cesium.JulianDate.now();
+                        const position = Cesium.Cartesian3.fromDegrees(data.lon, data.lat, data.alt);
+                        positionProperty.addSample(time, position);
+
+                        if (!window.mapCentered) {
+                            viewer.camera.flyTo({
+                                destination: Cesium.Cartesian3.fromDegrees(data.lon, data.lat, Math.max(data.alt + 150, 200)),
+                                orientation: { heading: Cesium.Math.toRadians(0.0), pitch: Cesium.Math.toRadians(-30.0) },
+                                duration: 1.0
+                            });
+                            window.mapCentered = true;
+                        }
+                    }
+
+                    // 2. Vision Feed (3D Perception Tab)
+                    else if (type === 'vision') {
+                        visionFrameCount++;
+                        const logBox = document.getElementById('vision-log');
+                        if (logBox.innerHTML.includes("Waiting")) logBox.innerHTML = ''; // clear wait msg
+                        
+                        const spinner = document.getElementById('perception-spinner');
+                        
+                        if (data && data.length > 0) {
+                            // Flash ring red and speed it up
+                            spinner.style.borderColor = "rgba(239, 68, 68, 0.6)";
+                            spinner.style.animationDuration = "2s";
+                            
+                            data.forEach(obj => {
+                                const entry = document.createElement('div');
+                                entry.innerHTML = `<span class="text-textMuted">[${getTimeString()}]</span> <span class="text-emerald-400">YOLO:</span> Detected <span class="text-white font-bold">'${obj.class}'</span> <span class="text-textMuted">(Conf: ${(obj.confidence*100).toFixed(1)}%)</span>`;
+                                logBox.appendChild(entry);
+                            });
+                        } else {
+                            // Reset ring
+                            spinner.style.borderColor = "rgba(56, 189, 248, 0.3)";
+                            spinner.style.animationDuration = "10s";
+                        }
+                        
+                        // Keep scroll at bottom
+                        if (logBox.childElementCount > 30) logBox.removeChild(logBox.firstChild);
+                        logBox.scrollTop = logBox.scrollHeight;
+                    }
+
+                    // 3. Swarm Network Feed (Swarm Topology Tab)
+                    else if (type === 'swarm_telemetry') {
+                        // data is the raw UDP packet: {type: 'TELEMETRY', drone_id: '...', lat, lon}
+                        if (data.type === 'TELEMETRY') {
+                            const id = data.drone_id;
+                            if (!swarmNodes[id]) {
+                                // Add new node to Roster
+                                const roster = document.getElementById('swarm-roster');
+                                const nodeEntry = document.createElement('div');
+                                nodeEntry.id = `roster-${id}`;
+                                nodeEntry.className = "flex justify-between items-center text-sm pb-2 border-b border-borderSubtle";
+                                nodeEntry.innerHTML = `
+                                    <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-accentBlue shadow-[0_0_8px_#5E6AD2]"></div>Drone ${id}</div>
+                                    <span class="font-mono text-[10px] text-textMuted" id="ping-${id}">--ms</span>
+                                `;
+                                roster.appendChild(nodeEntry);
+                                
+                                // Add random position on the graph mockup (since real map dist requires a complex projection, we randomize a 2D layout for the abstract topology graph)
+                                const nodesContainer = document.getElementById('swarm-nodes');
+                                const graphEntry = document.createElement('div');
+                                graphEntry.className = "w-8 h-8 rounded-full bg-panelDark border border-accentBlue/50 flex items-center justify-center text-textMuted absolute text-xs transition-all duration-500 z-10 shadow-lg";
+                                
+                                // Random abstract position between 10% and 90%
+                                const topPx = Math.floor(Math.random() * 80 + 10);
+                                const leftPx = Math.floor(Math.random() * 80 + 10);
+                                graphEntry.style.top = `${topPx}%`;
+                                graphEntry.style.left = `${leftPx}%`;
+                                graphEntry.innerText = id.substring(0, 2);
+                                nodesContainer.appendChild(graphEntry);
+                                
+                                // Add SVG line from center (50,50) to node
+                                const svg = document.getElementById('swarm-lines');
+                                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                                line.setAttribute('x1', '50%');
+                                line.setAttribute('y1', '50%');
+                                line.setAttribute('x2', `${leftPx}%`);
+                                line.setAttribute('y2', `${topPx}%`);
+                                line.setAttribute('stroke-width', '1');
+                                line.setAttribute('stroke-dasharray', '4');
+                                svg.appendChild(line);
+                                
+                                swarmNodes[id] = { lastSeen: Date.now() };
+                                document.getElementById('swarm-count').innerText = `${Object.keys(swarmNodes).length + 1} Nodes`;
+                            } else {
+                                swarmNodes[id].lastSeen = Date.now();
+                                // Simulate latency based on ping jitter (15ms - 45ms)
+                                const latency = Math.floor(Math.random() * 30 + 15);
+                                document.getElementById(`ping-${id}`).innerText = `${latency}ms`;
+                                document.getElementById(`ping-${id}`).classList.add("text-emerald-400");
+                                setTimeout(() => document.getElementById(`ping-${id}`).classList.remove("text-emerald-400"), 500);
+                            }
+                        }
+                    }
+
+                    // 4. AI Core (RL) Feed (AI Core Tab)
+                    else if (type === 'ai_core') {
+                        // Flash the icon
+                        const icon = document.getElementById('ai-icon');
+                        icon.classList.remove('text-emerald-400');
+                        icon.classList.add('text-white');
+                        setTimeout(() => { icon.classList.remove('text-white'); icon.classList.add('text-emerald-400'); }, 200);
+
+                        // Update text
+                        document.getElementById('ai-action').innerText = data.action;
+                        document.getElementById('ai-conf-text').innerText = `${data.confidence.toFixed(1)}%`;
+                        document.getElementById('ai-dlat-text').innerText = data.d_lat.toFixed(5);
+                        document.getElementById('ai-dlon-text').innerText = data.d_lon.toFixed(5);
+
+                        // Update bars
+                        document.getElementById('ai-conf-bar').style.width = `${data.confidence}%`;
+                        
+                        // Map delta (-0.001 to +0.001) to progress bar left/right
+                        // Center is 50%. A d_lat of +0.0001 means bar goes right.
+                        const maxDelta = 0.0005;
+                        const normLat = Math.max(-1.0, Math.min(1.0, data.d_lat / maxDelta));
+                        const normLon = Math.max(-1.0, Math.min(1.0, data.d_lon / maxDelta));
+
+                        // For Lat
+                        if (normLat > 0) {
+                            document.getElementById('ai-dlat-bar').style.marginLeft = '50%';
+                            document.getElementById('ai-dlat-bar').style.width = `${normLat * 50}%`;
+                        } else {
+                            document.getElementById('ai-dlat-bar').style.marginLeft = `${50 + (normLat * 50)}%`;
+                            document.getElementById('ai-dlat-bar').style.width = `${Math.abs(normLat) * 50}%`;
+                        }
+
+                        // For Lon
+                        if (normLon > 0) {
+                            document.getElementById('ai-dlon-bar').style.marginLeft = '50%';
+                            document.getElementById('ai-dlon-bar').style.width = `${normLon * 50}%`;
+                        } else {
+                            document.getElementById('ai-dlon-bar').style.marginLeft = `${50 + (normLon * 50)}%`;
+                            document.getElementById('ai-dlon-bar').style.width = `${Math.abs(normLon) * 50}%`;
+                        }
+                    }
+
+                } catch(e) {}
+            };
+        }
+        connectWebSocket();
+
+        // Send Command Logic
+        window.sendTargetCmd = function() {
+            if (!ws || ws.readyState !== WebSocket.OPEN) return alert("Datalink offline.");
+            const lat = document.getElementById('cmd-lat').value;
+            const lon = document.getElementById('cmd-lon').value;
+            const alt = document.getElementById('cmd-alt').value;
+            
+            if (!lat || !lon) return alert("Please enter valid LAT and LNG coordinates.");
+            
+            ws.send(JSON.stringify({
+                type: 'COMMAND',
+                action: 'GOTO',
+                lat: parseFloat(lat),
+                lon: parseFloat(lon),
+                alt: parseFloat(alt || 50.0)
+            }));
+            
+            alert(`Command Dispatched: Fly to (${lat}, ${lon})`);
+        };
+        
+        window.sendCmd = function(action) {
+            if (!ws || ws.readyState !== WebSocket.OPEN) return alert("Datalink offline.");
+            ws.send(JSON.stringify({ type: 'COMMAND', action: action }));
+            alert(`Command Dispatched: ${action}`);
+        };
+
+        // Uptime Counter
+        let seconds = 0;
+        setInterval(() => {
+            seconds++;
+            const hrs = String(Math.floor(seconds / 3600)).padStart(2, '0');
+            const mins = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+            const secs = String(seconds % 60).padStart(2, '0');
+            document.getElementById('uptime-display').innerText = `${hrs}:${mins}:${secs}`;
+        }, 1000);
+    </script>
+</body>
+</html>

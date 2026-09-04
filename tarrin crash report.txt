@@ -1,0 +1,606 @@
+Windows PowerShell 5.1
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+PS C:\Users\ceohr\Downloads\AI-airplane-pilot> python scripts/airsim_bridge.py --model models/session3_final.pth
+[OK] AirSim 1.8.1 ready.
+
+Using model: models/session3_final.pth
+
+Loading brain: session3_final.pth
+  Session 3 | Update 1499 | Steps 3,144,679,424 | Dim 10
+  Brain loaded!
+
+Connecting to AirSim...
+Connected!
+Client Ver:1 (Min Req: 1), Server Ver:1 (Min Req: 1)
+
+  Connected to AirSim!
+  Target position (NED): x=50.0 y=0.0 z=-20.0
+
+============================================================
+  Teleporting drone to safe open field...
+  Spawned at: X=777.2, Y=-5119.1
+  New Target: X=1277.2, Y=-5119.1, Z=-20.7
+  Cleaning up old obstacles and spawning a dense pillar forest...
+  Hilly terrain and 1400 varied obstacles spawned successfully!
+  Taking off...
+  AIRBORNE! Aegis AI has control.
+  Press Ctrl+C at any time to land and exit.
+============================================================
+
+   Step |       X |       Y |       Z |   Speed | DistToTarget
+  ------------------------------------------------------------
+      0 |   777.5 | -5118.7 |    -0.3 |    0.01 |        500.1m
+     20 |   779.8 | -5120.3 |     1.1 |    7.10 |        497.8m
+     40 |   788.1 | -5125.5 |     2.7 |   12.35 |        489.7m
+     60 |   801.0 | -5132.4 |     2.0 |   16.68 |        476.9m
+     80 |   817.4 | -5138.6 |    -0.4 |   13.55 |        460.6m
+    100 |   826.0 | -5139.6 |    -0.4 |    8.84 |        452.2m
+
+  [CRASH] Drone smashed head-on into AegisObstacle_1247 at 9.7 m/s!
+
+  Landing...
+  Landed! Session complete.
+PS C:\Users\ceohr\Downloads\AI-airplane-pilot> python scripts/airsim_bridge.py --model models/session3_final.pth
+[OK] AirSim 1.8.1 ready.
+
+Using model: models/session3_final.pth
+
+Loading brain: session3_final.pth
+  Session 3 | Update 1499 | Steps 3,144,679,424 | Dim 10
+  Brain loaded!
+
+Connecting to AirSim...
+Connected!
+Client Ver:1 (Min Req: 1), Server Ver:1 (Min Req: 1)
+
+  Connected to AirSim!
+  Target position (NED): x=50.0 y=0.0 z=-20.0
+
+============================================================
+  Teleporting drone to safe open field...
+  Spawned at: X=777.2, Y=-5119.1
+  New Target: X=1277.2, Y=-5119.1, Z=-18.3
+  Cleaning up old obstacles and spawning a dense pillar forest...
+  Hilly terrain and 1400 varied obstacles spawned successfully!
+  Taking off...
+  AIRBORNE! Aegis AI has control.
+  Press Ctrl+C at any time to land and exit.
+============================================================
+
+   Step |       X |       Y |       Z |   Speed | DistToTarget
+  ------------------------------------------------------------
+      0 |   777.6 | -5118.5 |     0.8 |    0.01 |        500.0m
+     20 |   780.1 | -5120.3 |     2.4 |    7.35 |        497.5m
+     40 |   788.6 | -5125.8 |     4.0 |   12.54 |        489.1m
+
+  [CRASH] Drone smashed head-on into AegisObstacle_183 at 13.9 m/s!
+
+  Landing...
+  Landed! Session complete.
+PSpython scripts/airsim_bridge.py --model models/session3_final.pth
+[OK] AirSim 1.8.1 ready.
+
+Using model: models/session3_final.pth
+
+Loading brain: session3_final.pth
+  Session 3 | Update 1499 | Steps 3,144,679,424 | Dim 10
+  Brain loaded!
+
+Connecting to AirSim...
+Connected!
+Client Ver:1 (Min Req: 1), Server Ver:1 (Min Req: 1)
+
+  Connected to AirSim!
+  Target position (NED): x=50.0 y=0.0 z=-20.0
+
+============================================================
+  Teleporting drone to safe open field...
+  Spawned at: X=777.2, Y=-5119.1
+  New Target: X=1277.2, Y=-5119.1, Z=-20.7
+  Cleaning up old obstacles and spawning a dense pillar forest...
+  Hilly terrain and 1400 varied obstacles spawned successfully!
+  Taking off...
+  AIRBORNE! Aegis AI has control.
+  Press Ctrl+C at any time to land and exit.
+============================================================
+
+   Step |       X |       Y |       Z |   Speed | DistToTarget
+  ------------------------------------------------------------
+      0 |   777.2 | -5119.1 |     0.8 |    0.01 |        500.5m
+     20 |   778.6 | -5120.1 |     1.8 |    1.93 |        499.1m
+     40 |   778.6 | -5120.1 |     1.8 |    0.48 |        499.1m
+     60 |   778.6 | -5120.1 |     1.8 |    0.42 |        499.1m
+     80 |   778.6 | -5120.1 |     1.8 |    0.39 |        499.1m
+    100 |   778.6 | -5120.1 |     1.8 |    0.44 |        499.1m
+    120 |   778.6 | -5120.1 |     1.8 |    0.42 |        499.1m
+    140 |   778.6 | -5120.1 |     1.8 |    0.43 |        499.1m
+    160 |   778.6 | -5120.1 |     1.8 |    0.43 |        499.1m
+    180 |   778.6 | -5120.1 |     1.8 |    0.52 |        499.1m
+    200 |   778.6 | -5120.1 |     1.8 |    0.50 |        499.1m
+    220 |   778.6 | -5120.1 |     1.9 |    0.48 |        499.1m
+    240 |   778.6 | -5120.1 |     1.9 |    0.48 |        499.1m
+    260 |   778.6 | -5120.1 |     1.9 |    0.51 |        499.1m
+    280 |   778.6 | -5120.1 |     1.9 |    0.48 |        499.1m
+    300 |   778.6 | -5120.1 |     1.9 |    0.48 |        499.1m
+    320 |   778.6 | -5120.1 |     1.9 |    0.53 |        499.1m
+    340 |   778.6 | -5120.1 |     1.9 |    0.53 |        499.1m
+    360 |   778.6 | -5120.1 |     1.9 |    0.52 |        499.1m
+    380 |   778.6 | -5120.1 |     2.0 |    0.53 |        499.1m
+    400 |   778.6 | -5120.1 |     2.0 |    0.55 |        499.1m
+    420 |   778.6 | -5120.1 |     2.0 |    0.51 |        499.1m
+    440 |   778.6 | -5120.1 |     2.0 |    0.49 |        499.1m
+    460 |   778.7 | -5120.1 |     2.0 |    0.50 |        499.1m
+    480 |   778.7 | -5120.1 |     2.0 |    0.51 |        499.1m
+    500 |   778.7 | -5120.1 |     2.0 |    0.66 |        499.1m
+    520 |   778.7 | -5120.1 |     2.0 |    0.48 |        499.1m
+    540 |   778.7 | -5120.1 |     2.1 |    0.52 |        499.1m
+    560 |   778.7 | -5120.1 |     2.1 |    0.53 |        499.0m
+    580 |   778.7 | -5120.1 |     2.1 |    1.02 |        499.0m
+    600 |   778.7 | -5120.1 |     2.1 |    0.97 |        499.0m
+    620 |   778.7 | -5120.2 |     2.2 |    0.99 |        499.0m
+    640 |   778.7 | -5120.2 |     2.2 |    1.34 |        499.0m
+    660 |   778.7 | -5120.2 |     2.3 |    1.02 |        499.0m
+    680 |   778.8 | -5120.2 |     2.3 |    1.65 |        499.0m
+    700 |   778.8 | -5120.2 |     2.4 |    1.17 |        498.9m
+    720 |   778.8 | -5120.2 |     2.4 |    1.83 |        498.9m
+    740 |   778.8 | -5120.3 |     2.4 |    2.25 |        498.9m
+    760 |   778.9 | -5120.3 |     2.5 |    2.64 |        498.9m
+    780 |   778.9 | -5120.3 |     2.5 |    2.87 |        498.9m
+    800 |   778.9 | -5120.3 |     2.5 |    2.11 |        498.9m
+    820 |   778.9 | -5120.3 |     2.5 |    2.19 |        498.9m
+    840 |   778.9 | -5120.3 |     2.5 |    1.74 |        498.9m
+    860 |   778.8 | -5120.3 |     2.5 |    0.75 |        498.9m
+    880 |   778.8 | -5120.3 |     2.5 |    0.60 |        498.9m
+    900 |   778.8 | -5120.3 |     2.5 |    0.33 |        498.9m
+    920 |   778.8 | -5120.3 |     2.5 |    2.28 |        498.9m
+    940 |   778.9 | -5120.3 |     2.5 |    1.42 |        498.9m
+    960 |   778.9 | -5120.3 |     2.5 |    1.28 |        498.9m
+    980 |   778.9 | -5120.3 |     2.5 |    1.48 |        498.9m
+   1000 |   778.9 | -5120.3 |     2.5 |    1.12 |        498.9m
+   1020 |   778.9 | -5120.3 |     2.5 |    0.95 |        498.9m
+   1040 |   778.9 | -5120.3 |     2.5 |    0.83 |        498.9m
+   1060 |   778.9 | -5120.3 |     2.5 |    0.79 |        498.9m
+   1080 |   778.9 | -5120.3 |     2.5 |    0.82 |        498.9m
+   1100 |   778.9 | -5120.3 |     2.5 |    1.34 |        498.9m
+   1120 |   778.9 | -5120.3 |     2.5 |    0.91 |        498.9m
+   1140 |   778.9 | -5120.3 |     2.5 |    0.96 |        498.9m
+   1160 |   778.9 | -5120.3 |     2.5 |    0.83 |        498.9m
+   1180 |   778.9 | -5120.3 |     2.5 |    0.77 |        498.9m
+   1200 |   778.9 | -5120.3 |     2.5 |    0.75 |        498.9m
+   1220 |   778.9 | -5120.3 |     2.5 |    0.71 |        498.9m
+   1240 |   778.9 | -5120.3 |     2.5 |    0.69 |        498.9m
+   1260 |   778.9 | -5120.3 |     2.5 |    0.73 |        498.9m
+   1280 |   778.9 | -5120.3 |     2.5 |    0.78 |        498.9m
+   1300 |   778.9 | -5120.3 |     2.5 |    1.24 |        498.9m
+   1320 |   778.9 | -5120.3 |     2.6 |    1.20 |        498.8m
+   1340 |   778.9 | -5120.2 |     2.6 |    1.01 |        498.8m
+   1360 |   778.9 | -5120.2 |     2.6 |    0.89 |        498.8m
+   1380 |   778.9 | -5120.2 |     2.6 |    1.09 |        498.8m
+   1400 |   778.9 | -5120.2 |     2.6 |    3.45 |        498.8m
+   1420 |   778.9 | -5120.2 |     2.6 |    3.94 |        498.8m
+   1440 |   778.9 | -5120.2 |     2.6 |    3.94 |        498.8m
+   1460 |   779.0 | -5120.2 |     2.6 |    4.07 |        498.8m
+   1480 |   779.0 | -5120.2 |     2.7 |    3.91 |        498.8m
+   1500 |   779.0 | -5120.2 |     2.7 |    4.48 |        498.7m
+   1520 |   779.1 | -5120.1 |     2.7 |    4.95 |        498.7m
+   1540 |   779.2 | -5120.1 |     2.8 |    3.62 |        498.6m
+   1560 |   779.2 | -5120.0 |     2.8 |    2.80 |        498.5m
+   1580 |   779.4 | -5119.8 |     2.9 |    3.32 |        498.4m
+   1600 |   782.2 | -5117.4 |     3.9 |    8.37 |        495.6m
+   1620 |   790.6 | -5110.1 |     4.7 |   13.40 |        487.4m
+
+  [CRASH] Drone smashed head-on into AegisObstacle_587 at 13.6 m/s!
+
+  Landing...
+  Landed! Session complete.
+PS C:\Users\ceohr\Downloads\AI-airplane-pilot>
+
+Windows PowerShell 5.1
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+PS C:\Users\ceohr\Downloads\AI-airplane-pilot> python scripts/airsim_bridge.py --model models/session3_final.pth
+[OK] AirSim 1.8.1 ready.
+
+Using model: models/session3_final.pth
+
+Loading brain: session3_final.pth
+  Session 3 | Update 1499 | Steps 3,144,679,424 | Dim 10
+  Brain loaded!
+
+Connecting to AirSim...
+Connected!
+Client Ver:1 (Min Req: 1), Server Ver:1 (Min Req: 1)
+
+  Connected to AirSim!
+  Target position (NED): x=50.0 y=0.0 z=-20.0
+
+============================================================
+  Teleporting drone to safe open field...
+  Spawned at: X=777.2, Y=-5119.1
+  New Target: X=1277.2, Y=-5119.1, Z=-20.7
+  Cleaning up old obstacles and spawning a dense pillar forest...
+  Hilly terrain and 1400 varied obstacles spawned successfully!
+  Taking off...
+  AIRBORNE! Aegis AI has control.
+  Press Ctrl+C at any time to land and exit.
+============================================================
+
+   Step |       X |       Y |       Z |   Speed | DistToTarget
+  ------------------------------------------------------------
+      0 |   777.2 | -5119.1 |     0.8 |    0.01 |        500.5m
+     20 |   779.7 | -5120.9 |     2.3 |    7.33 |        498.0m
+     40 |   788.2 | -5126.3 |     3.9 |   12.52 |        489.7m
+
+  [CRASH] Drone smashed head-on into AegisObstacle_416 at 13.2 m/s!
+
+  Landing...
+  Landed! Session complete.
+PS C:\Users\ceohr\Downloads\AI-airplane-pilot> python scripts/airsim_bridge.py --model models/session3_final.pth
+[OK] AirSim 1.8.1 ready.
+
+Using model: models/session3_final.pth
+
+Loading brain: session3_final.pth
+  Session 3 | Update 1499 | Steps 3,144,679,424 | Dim 10
+  Brain loaded!
+
+Connecting to AirSim...
+Connected!
+Client Ver:1 (Min Req: 1), Server Ver:1 (Min Req: 1)
+
+  Connected to AirSim!
+  Target position (NED): x=50.0 y=0.0 z=-20.0
+
+============================================================
+  Teleporting drone to safe open field...
+  Spawned at: X=777.2, Y=-5119.1
+  New Target: X=1277.2, Y=-5119.1, Z=-20.7
+  Cleaning up old obstacles and spawning a dense pillar forest...
+  Hilly terrain and 1400 varied obstacles spawned successfully!
+  Taking off...
+  AIRBORNE! Aegis AI has control.
+  Press Ctrl+C at any time to land and exit.
+============================================================
+
+   Step |       X |       Y |       Z |   Speed | DistToTarget
+  ------------------------------------------------------------
+      0 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+     20 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+     40 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+     60 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+     80 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    100 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    120 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    140 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    160 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    180 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    200 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    220 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    240 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    260 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    280 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    300 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    320 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    340 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    360 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    380 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    400 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    420 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    440 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    460 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    480 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    500 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    520 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    540 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    560 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    580 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    600 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    620 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    640 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    660 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    680 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    700 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    720 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    740 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    760 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    780 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    800 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    820 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    840 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    860 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    880 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    900 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    920 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    940 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    960 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+    980 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1000 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1020 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1040 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1060 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1080 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1100 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1120 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1140 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1160 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1180 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1200 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1220 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1240 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1260 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1280 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1300 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1320 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1340 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1360 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1380 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1400 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1420 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1440 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1460 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1480 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1500 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1520 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1540 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1560 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1580 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1600 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1620 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1640 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1660 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1680 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1700 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1720 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1740 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1760 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1780 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1800 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1820 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1840 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1860 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1880 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1900 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1920 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1940 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1960 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   1980 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2000 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2020 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2040 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2060 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2080 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2100 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2120 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2140 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2160 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2180 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2200 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2220 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2240 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2260 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2280 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2300 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2320 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2340 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2360 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2380 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2400 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2420 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2440 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2460 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2480 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2500 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2520 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2540 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2560 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2580 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2600 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2620 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2640 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2660 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2680 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2700 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2720 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2740 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2760 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2780 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2800 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2820 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2840 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2860 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2880 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2900 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2920 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2940 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2960 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+   2980 |   777.2 | -5117.8 |    -0.7 |    0.00 |        500.4m
+
+  Landing...
+  Landed! Session complete.
+
+---
+Windows PowerShell 5.1
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+PS C:\Users\ceohr\Downloads\AI-airplane-pilot> python scripts/airsim_bridge.py --model models/session3_final.pth
+[OK] AirSim 1.8.1 ready.
+
+Using model: models/session3_final.pth
+
+Loading brain: session3_final.pth
+  Session 3 | Update 1499 | Steps 3,144,679,424 | Dim 10
+  Brain loaded!
+
+Connecting to AirSim...
+Connected!
+Client Ver:1 (Min Req: 1), Server Ver:1 (Min Req: 1)
+
+  Connected to AirSim!
+  Target position (NED): x=50.0 y=0.0 z=-20.0
+
+============================================================
+  Teleporting drone to safe open field...
+  Spawned at: X=777.2, Y=-5119.1
+  New Target: X=1277.2, Y=-5119.1, Z=-20.7
+  Cleaning up old obstacles and spawning a dense pillar forest...
+  Hilly terrain and 1400 varied obstacles spawned successfully!
+  Taking off...
+  AIRBORNE! Aegis AI has control.
+  Press Ctrl+C at any time to land and exit.
+============================================================
+
+   Step |       X |       Y |       Z |   Speed | DistToTarget
+  ------------------------------------------------------------
+      0 |   777.2 | -5119.1 |     0.8 |    0.01 |        500.5m
+     20 |   779.7 | -5120.4 |     1.5 |    6.92 |        498.0m
+     40 |   789.2 | -5123.1 |     3.0 |   12.36 |        488.6m
+     60 |   802.5 | -5122.2 |     4.3 |   13.43 |        475.3m
+     80 |   812.7 | -5115.1 |     8.7 |   12.51 |        465.5m
+    100 |   816.6 | -5108.5 |    16.0 |    9.31 |        462.1m
+    120 |   818.1 | -5102.2 |    22.0 |    9.25 |        461.4m
+
+  [CRASH] Drone smashed head-on into AegisObstacle_524 at 11.7 m/s!
+PS C:\Users\ceohr\Downloads\AI-airplane-pilot> python scripts/airsim_bridge.py --model models/session3_final.pth
+[OK] AirSim 1.8.1 ready.
+
+Using model: models/session3_final.pth
+
+Loading brain: session3_final.pth
+  Session 3 | Update 1499 | Steps 3,144,679,424 | Dim 10
+  Brain loaded!
+
+Connecting to AirSim...
+Connected!
+Client Ver:1 (Min Req: 1), Server Ver:1 (Min Req: 1)
+
+  Connected to AirSim!
+  Target position (NED): x=50.0 y=0.0 z=-20.0
+
+============================================================
+  Teleporting drone to safe open field...
+  Spawned at: X=777.2, Y=-5119.1
+  New Target: X=1277.2, Y=-5119.1, Z=-20.7
+  Cleaning up old obstacles and spawning a dense pillar forest...
+  Hilly terrain and 1400 varied obstacles spawned successfully!
+  Taking off...
+  AIRBORNE! Aegis AI has control.
+  Press Ctrl+C at any time to land and exit.
+============================================================
+
+   Step |       X |       Y |       Z |   Speed | DistToTarget
+  ------------------------------------------------------------
+      0 |   777.2 | -5119.1 |     0.8 |    0.01 |        500.5m
+     20 |   779.8 | -5120.6 |     2.2 |    7.23 |        497.9m
+     40 |   789.2 | -5124.0 |     4.0 |   12.35 |        488.7m
+     60 |   803.4 | -5124.8 |     4.8 |   15.13 |        474.5m
+     80 |   817.0 | -5119.3 |     8.0 |   14.84 |        461.1m
+    100 |   824.7 | -5110.8 |    14.2 |   11.14 |        453.9m
+
+  [CRASH] Drone smashed head-on into AegisObstacle_413 at 11.1 m/s!
+PS C:\Users\ceohr\Downloads\AI-airplane-pilot> python scripts/airsim_bridge.py --model models/session3_final.pth
+[OK] AirSim 1.8.1 ready.
+
+Using model: models/session3_final.pth
+
+Loading brain: session3_final.pth
+  Session 3 | Update 1499 | Steps 3,144,679,424 | Dim 10
+  Brain loaded!
+
+Connecting to AirSim...
+Connected!
+Client Ver:1 (Min Req: 1), Server Ver:1 (Min Req: 1)
+
+  Connected to AirSim!
+  Target position (NED): x=50.0 y=0.0 z=-20.0
+
+============================================================
+  Teleporting drone to safe open field...
+  Spawned at: X=777.2, Y=-5119.1
+  New Target: X=1277.2, Y=-5119.1, Z=-20.7
+  Cleaning up old obstacles and spawning a dense pillar forest...
+  Hilly terrain and 1400 varied obstacles spawned successfully!
+  Taking off...
+  AIRBORNE! Aegis AI has control.
+  Press Ctrl+C at any time to land and exit.
+============================================================
+
+   Step |       X |       Y |       Z |   Speed | DistToTarget
+  ------------------------------------------------------------
+      0 |   777.2 | -5119.1 |     0.8 |    0.01 |        500.5m
+     20 |   779.8 | -5120.5 |     1.7 |    7.07 |        497.9m
+     40 |   789.3 | -5123.4 |     3.3 |   12.43 |        488.5m
+     60 |   803.4 | -5123.1 |     4.4 |   15.00 |        474.4m
+
+  [CRASH] Drone smashed head-on into AegisObstacle_530 at 15.0 m/s!
+PS C:\Users\ceohr\Downloads\AI-airplane-pilot> python scripts/airsim_bridge.py --model models/session3_final.pth
+[OK] AirSim 1.8.1 ready.
+
+Using model: models/session3_final.pth
+
+Loading brain: session3_final.pth
+  Session 3 | Update 1499 | Steps 3,144,679,424 | Dim 10
+  Brain loaded!
+
+Connecting to AirSim...
+Connected!
+Client Ver:1 (Min Req: 1), Server Ver:1 (Min Req: 1)
+
+  Connected to AirSim!
+  Target position (NED): x=50.0 y=0.0 z=-20.0
+
+============================================================
+  Teleporting drone to safe open field...
+  Spawned at: X=777.2, Y=-5119.1
+  New Target: X=1277.2, Y=-5119.1, Z=-20.7
+  Cleaning up old obstacles and spawning a dense pillar forest...
+  Hilly terrain and 1400 varied obstacles spawned successfully!
+  Taking off...
+  AIRBORNE! Aegis AI has control.
+  Press Ctrl+C at any time to land and exit.
+============================================================
+
+   Step |       X |       Y |       Z |   Speed | DistToTarget
+  ------------------------------------------------------------
+      0 |   777.2 | -5119.1 |     0.8 |    0.01 |        500.5m
+     20 |   779.8 | -5120.7 |     2.3 |    7.26 |        497.9m
+     40 |   789.0 | -5124.5 |     4.0 |   12.42 |        488.9m
+     60 |   803.4 | -5127.2 |     4.0 |   16.32 |        474.5m
+
+  [CRASH] Drone smashed head-on into AegisObstacle_369 at 17.9 m/s!
+PS C:\Users\ceohr\Downloads\AI-airplane-pilot> python scripts/airsim_bridge.py --model models/session3_final.pth
+[OK] AirSim 1.8.1 ready.
+
+Using model: models/session3_final.pth
+
+Loading brain: session3_final.pth
+  Session 3 | Update 1499 | Steps 3,144,679,424 | Dim 10
+  Brain loaded!
+
+Connecting to AirSim...
+Connected!
+Client Ver:1 (Min Req: 1), Server Ver:1 (Min Req: 1)
+
+  Connected to AirSim!
+  Target position (NED): x=50.0 y=0.0 z=-20.0
+
+============================================================
+  Teleporting drone to safe open field...
+  Spawned at: X=777.2, Y=-5119.1
+  New Target: X=1277.2, Y=-5119.1, Z=-20.7
+  Cleaning up old obstacles and spawning a dense pillar forest...
+  Hilly terrain and 1400 varied obstacles spawned successfully!
+  Taking off...
+  AIRBORNE! Aegis AI has control.
+  Press Ctrl+C at any time to land and exit.
+============================================================
+
+   Step |       X |       Y |       Z |   Speed | DistToTarget
+  ------------------------------------------------------------
+      0 |   777.2 | -5119.1 |     0.8 |    0.01 |        500.5m
+     20 |   779.8 | -5120.5 |     1.8 |    7.11 |        497.9m
+     40 |   789.2 | -5123.4 |     3.4 |   12.38 |        488.6m
+     60 |   803.7 | -5123.7 |     3.8 |   15.86 |        474.1m
+
+  [CRASH] Drone smashed head-on into AegisObstacle_120 at 16.7 m/s!
+PS C:\Users\ceohr\Downloads\AI-airplane-pilot>
